@@ -1,23 +1,35 @@
 import { useEffect, useState, useMemo } from 'react';
 import {
-  Channel,
+  Channel as StreamChannelComponent,
   Chat,
   MessageInput,
   VirtualizedMessageList,
   Window,
 } from 'stream-chat-react';
-import { StreamChat } from 'stream-chat';
+import { StreamChat, Channel } from 'stream-chat';
 import 'stream-chat-react/dist/css/v2/index.css';
 import { jwtDecode } from 'jwt-decode';
 import { STREAM_CHAT_API_KEY } from '../utils/env';
 
-const ChatClientWrapper = ({ jwt, userData, channelId, onError }) => {
-    const [client, setClient] = useState(null);
-    const [channel, setChannel] = useState(null);
+interface UserData {
+    id: string;
+    name: string;
+    image: string;
+}
+
+interface ChatClientWrapperProps {
+    jwt: string;
+    userData: UserData;
+    channelId: string;
+    onError: () => void;
+}
+
+const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, channelId, onError }) => {
+    const [client, setClient] = useState<StreamChat | null>(null);
+    const [channel, setChannel] = useState<Channel | null>(null);
 
     useEffect(() => {
         let mounted = true;
-        // Create a new instance to avoid singleton state issues with React Strict Mode
         const chatClient = new StreamChat(STREAM_CHAT_API_KEY);
 
         const init = async () => {
@@ -52,23 +64,35 @@ const ChatClientWrapper = ({ jwt, userData, channelId, onError }) => {
     return (
         <div className="chat-room-container" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <Chat client={client} theme='str-chat__theme-dark'>
-                <Channel channel={channel}>
+                <StreamChannelComponent channel={channel as Channel}>
                     <Window>
                         <VirtualizedMessageList />
                         <MessageInput focus />
                     </Window>
-                </Channel>
+                </StreamChannelComponent>
             </Chat>
         </div>
     );
 };
 
-const ChatRoom = ({ jwt, channelId, onError }) => {
-  const userData = useMemo(() => {
+interface ChatRoomProps {
+    jwt: string;
+    channelId: string;
+    onError: () => void;
+}
+
+interface MyJwtPayload {
+    user_id?: string;
+    name?: string;
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+const ChatRoom: React.FC<ChatRoomProps> = ({ jwt, channelId, onError }) => {
+  const userData = useMemo<UserData | null>(() => {
       if (!jwt) return null;
       
       try {
-          const payload = jwtDecode(jwt);
+          const payload = jwtDecode<MyJwtPayload>(jwt);
       
           if (payload.user_id) {
             return {
@@ -84,7 +108,6 @@ const ChatRoom = ({ jwt, channelId, onError }) => {
   }, [jwt]);
 
   if (!userData) {
-      // Should not happen if App.jsx validates, but safety fallback
       return null;
   }
 

@@ -1,14 +1,19 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, FC } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import VideoRoom from './components/VideoRoom';
 import ChatOverlay from './components/ChatOverlay';
 import './layout.css';
 
-const validateToken = (token, checkUserId = false) => {
-    if (!token || typeof token !== 'string') return false;
+interface MyJwtPayload {
+    user_id?: string;
+    [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+const validateToken = (token: string | null, checkUserId: boolean = false): boolean => {
+    if (!token) return false;
 
     try {
-        const payload = jwtDecode(token);
+        const payload = jwtDecode<MyJwtPayload>(token);
         
         if (checkUserId && !payload.user_id) return false;
         
@@ -18,7 +23,12 @@ const validateToken = (token, checkUserId = false) => {
     }
 };
 
-const Toast = ({ message, onClose }) => {
+interface ToastProps {
+    message: string;
+    onClose: () => void;
+}
+
+const Toast: FC<ToastProps> = ({ message, onClose }) => {
     useEffect(() => {
         const timer = setTimeout(onClose, 5000);
         return () => clearTimeout(timer);
@@ -31,8 +41,7 @@ const Toast = ({ message, onClose }) => {
     );
 };
 
-const App = () => {
-    // Parse URL parameters
+const App: FC = () => {
     const { channelId, jwtVideo, jwtChat } = useMemo(() => {
         const path = window.location.pathname;
         const rawChannelId = path.split('/')[1];
@@ -45,9 +54,9 @@ const App = () => {
         return { channelId, jwtVideo, jwtChat };
     }, []);
 
-    const [dismissedToast, setDismissedToast] = useState(false);
-    const [chatConnectionError, setChatConnectionError] = useState(false);
-    const [prevJwtChat, setPrevJwtChat] = useState(jwtChat);
+    const [dismissedToast, setDismissedToast] = useState<boolean>(false);
+    const [chatConnectionError, setChatConnectionError] = useState<boolean>(false);
+    const [prevJwtChat, setPrevJwtChat] = useState<string | null>(jwtChat);
 
     if (jwtChat !== prevJwtChat) {
         setPrevJwtChat(jwtChat);
@@ -60,7 +69,6 @@ const App = () => {
 
     const showInvalidChatToast = (jwtChat && !isChatValid && !dismissedToast) || (chatConnectionError && !dismissedToast);
 
-    // If no channel ID, show stub
     if (!channelId) {
         return (
             <div className="stub-container">
@@ -70,7 +78,6 @@ const App = () => {
         );
     }
 
-    // If no video token OR invalid video token, show stub
     if (!jwtVideo || !isVideoValid) {
         return (
             <div className="stub-container">

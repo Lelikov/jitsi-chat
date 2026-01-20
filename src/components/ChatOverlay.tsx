@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import { useState, FC } from 'react';
 import ChatRoom from './ChatRoom';
 
-const ChatOverlay = ({ jwt, channelId, onError }) => {
+interface ChatOverlayProps {
+    jwt: string;
+    channelId: string;
+    onError: () => void;
+}
+
+const ChatOverlay: FC<ChatOverlayProps> = ({ jwt, channelId, onError }) => {
     const [isOpen, setIsOpen] = useState(true);
 
     return (

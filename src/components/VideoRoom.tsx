@@ -2,10 +2,16 @@ import { JitsiMeeting } from '@jitsi/react-sdk';
 import React, { useRef, useCallback, useMemo } from 'react';
 import { WEBHOOK_URL, JITSI_DOMAIN } from '../utils/env';
 
-const VideoRoom = React.memo(({ jwt, roomName }) => {
-    const apiRef = useRef();
+interface VideoRoomProps {
+    jwt: string;
+    roomName: string;
+}
 
-    const sendWebhook = useCallback(async (event, payload = {}) => {
+const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
+    const apiRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    const sendWebhook = useCallback(async (event: string, payload: object = {}) => {
+        if (!WEBHOOK_URL) return;
         try {
             await fetch(WEBHOOK_URL, {
                 method: 'POST',
@@ -23,18 +29,17 @@ const VideoRoom = React.memo(({ jwt, roomName }) => {
         }
     }, [jwt]);
 
-    const handleVideoConferenceJoined = useCallback((payload) => {
+    const handleVideoConferenceJoined = useCallback((payload: object) => {
         sendWebhook('videoConferenceJoined', payload);
     }, [sendWebhook]);
 
-    const handleVideoConferenceLeft = useCallback((payload) => {
+    const handleVideoConferenceLeft = useCallback((payload: object) => {
         sendWebhook('videoConferenceLeft', payload);
     }, [sendWebhook]);
 
-    const handleApiReady = useCallback((apiObj) => {
+    const handleApiReady = useCallback((apiObj: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         apiRef.current = apiObj;
         
-        // Send initial ready webhook
         sendWebhook('handleApiReady', {});
 
         apiObj.on('videoConferenceJoined', handleVideoConferenceJoined);
@@ -54,13 +59,12 @@ const VideoRoom = React.memo(({ jwt, roomName }) => {
         hideConferenceSubject: false
     }), []);
 
-    const handleIFrameRef = useCallback((iframeRef) => {
+    const handleIFrameRef = useCallback((iframeRef: HTMLDivElement) => {
         iframeRef.style.height = '100%';
         iframeRef.style.width = '100%';
         iframeRef.style.border = 'none';
     }, []);
 
-    // Validate JWT format basic check
     if (!jwt || jwt.split('.').length !== 3) {
         return (
             <div className="video-room-container" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'red' }}>

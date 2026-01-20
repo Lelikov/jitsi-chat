@@ -1,8 +1,14 @@
-export const getEnv = (key) => {
+declare global {
+  interface Window {
+    _env_?: Record<string, string>;
+  }
+}
+
+export const getEnv = (key: string): string => {
   if (window._env_ && window._env_[key]) {
     return window._env_[key];
   }
-  return import.meta.env[key];
+  return import.meta.env[key] as string;
 };
 
 export const JITSI_DOMAIN = getEnv('VITE_JITSI_DOMAIN');
