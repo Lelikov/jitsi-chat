@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8030:80"
+    env_file:
+      - .env
