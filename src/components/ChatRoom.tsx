@@ -32,6 +32,7 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
         let mounted = true;
         const chatClient = new StreamChat(STREAM_CHAT_API_KEY);
 
+
         const init = async () => {
             try {
                 await chatClient.connectUser(userData, jwt);
