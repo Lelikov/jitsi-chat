@@ -56,7 +56,8 @@ const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
         startWithAudioMuted: true,
         disableThirdPartyRequests: true,
         prejoinPageEnabled: false,
-        hideConferenceSubject: false
+        hideConferenceSubject: true,
+        toolbarButtons: ['camera','microphone','fullscreen','select-background','settings','toggle-camera','hangup']
     }), []);
 
     const handleIFrameRef = useCallback((iframeRef: HTMLDivElement) => {
