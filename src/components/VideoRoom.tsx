@@ -39,11 +39,11 @@ const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
     const handleApiReady = useCallback((apiObj: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         apiRef.current = apiObj;
         
-        sendWebhook('handleApiReady', {});
+        // sendWebhook('handleApiReady', {});
 
         apiObj.on('videoConferenceJoined', handleVideoConferenceJoined);
         apiObj.on('videoConferenceLeft', handleVideoConferenceLeft);
-    }, [handleVideoConferenceJoined, handleVideoConferenceLeft, sendWebhook]);
+    }, [handleVideoConferenceJoined, handleVideoConferenceLeft]);
 
     const renderSpinner = useCallback(() => (
         <div className="loading-spinner">
