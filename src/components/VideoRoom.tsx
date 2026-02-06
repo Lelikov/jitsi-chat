@@ -11,7 +11,6 @@ const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
     const apiRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const sendWebhook = useCallback(async (event: string, payload: object = {}) => {
-        if (!WEBHOOK_URL) return;
         try {
             await fetch(WEBHOOK_URL, {
                 method: 'POST',
@@ -20,7 +19,7 @@ const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
                 },
                 body: JSON.stringify({
                     event,
-                    jwt_video: jwt,
+                    jwt,
                     payload
                 })
             });
@@ -53,7 +52,7 @@ const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
     ), []);
 
     const configOverwrite = useMemo(() => ({
-        startWithAudioMuted: true,
+        startWithAudioMuted: false,
         disableThirdPartyRequests: true,
         prejoinPageEnabled: false,
         hideConferenceSubject: true,
