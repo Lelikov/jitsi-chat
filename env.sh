@@ -10,6 +10,6 @@ done
 
 echo "};" >> /srv/env-config.js
 
-if [ -n "$VITE_STREAM_CHAT_API_KEY" ]; then
-  sed -i "s/VITE_STREAM_CHAT_API_KEY_PLACEHOLDER/$VITE_STREAM_CHAT_API_KEY/g" /srv/index.html
-fi
+ENV_CONFIG_HASH=$(sha256sum /srv/env-config.js | awk '{print $1}')
+
+sed -i "s/ENV_CONFIG_HASH_PLACEHOLDER/$ENV_CONFIG_HASH/g" /srv/index.html
