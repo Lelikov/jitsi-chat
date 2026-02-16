@@ -30,15 +30,26 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
 
     useEffect(() => {
         let mounted = true;
-        const chatClient = new StreamChat(STREAM_CHAT_API_KEY);
+        const chatClient = StreamChat.getInstance(STREAM_CHAT_API_KEY, {
+            timeout: 10000,
+            baseURL: 'https://chat-proxy-dublin.stream-io-api.com',
+        });
 
 
         const init = async () => {
             try {
-                await chatClient.connectUser(userData, jwt);
+                if (!chatClient.userID) {
+                    await chatClient.connectUser(userData, jwt);
+                } else if (chatClient.userID !== userData.id) {
+                    if (chatClient.userID) {
+                        await chatClient.disconnectUser();
+                    }
+                    await chatClient.connectUser(userData, jwt);
+                } else {
+                    await chatClient.openConnection();
+                }
                 
                 if (!mounted) {
-                    await chatClient.disconnectUser();
                     return;
                 }
 
@@ -56,7 +67,6 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
 
         return () => {
             mounted = false;
-            if (chatClient) chatClient.disconnectUser();
         };
     }, [jwt, userData, channelId, onError]);
 
