@@ -14,3 +14,4 @@ export const getEnv = (key: string): string => {
 export const JITSI_DOMAIN = getEnv('VITE_JITSI_DOMAIN');
 export const WEBHOOK_URL = getEnv('VITE_WEBHOOK_URL');
 export const STREAM_CHAT_API_KEY = getEnv('VITE_STREAM_CHAT_API_KEY');
+export const STREAM_CHAT_BASE_URL = getEnv('VITE_STREAM_CHAT_BASE_URL');

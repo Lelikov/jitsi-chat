@@ -9,7 +9,7 @@ import {
 import { StreamChat, Channel } from 'stream-chat';
 import 'stream-chat-react/dist/css/v2/index.css';
 import { jwtDecode } from 'jwt-decode';
-import { STREAM_CHAT_API_KEY } from '../utils/env';
+import { STREAM_CHAT_API_KEY, STREAM_CHAT_BASE_URL } from '../utils/env';
 
 interface UserData {
     id: string;
@@ -32,7 +32,7 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
         let mounted = true;
         const chatClient = StreamChat.getInstance(STREAM_CHAT_API_KEY, {
             timeout: 10000,
-            baseURL: 'https://chat-proxy-dublin.stream-io-api.com',
+            baseURL: STREAM_CHAT_BASE_URL,
         });
 
 
