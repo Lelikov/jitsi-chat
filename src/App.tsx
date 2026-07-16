@@ -83,7 +83,7 @@ const App: FC = () => {
             <div className="stub-container">
                 <h1>Нет доступа к встрече</h1>
                 <p>Пожалуйста, предоставьте действительный видео-токен для входа.</p>
-                {jwtVideo && !isVideoValid && <p style={{color: '#ff4444', marginTop: '10px'}}>Предоставленный видео-токен недействителен.</p>}
+                {jwtVideo && !isVideoValid && <p style={{color: 'var(--danger)', marginTop: '10px'}}>Предоставленный видео-токен недействителен.</p>}
             </div>
         );
     }

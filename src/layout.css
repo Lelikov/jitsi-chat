@@ -129,7 +129,7 @@ body, html, #root {
     width: 100%;
     height: 40vh;
     border-left: none;
-    border-top: 1px solid #333;
+    border-top: 1px solid var(--border);
   }
 
   .video-section {
