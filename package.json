@@ -12,7 +12,7 @@
   "dependencies": {
     "@jitsi/react-sdk": "^1.4.4",
     "cloudevents": "^10.0.0",
-    "events-design-system": "file:../events-design-system",
+    "events-design-system": "github:Lelikov/events-design-system#v0.1.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
