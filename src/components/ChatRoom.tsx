@@ -74,7 +74,7 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
 
     return (
         <div className="chat-room-container" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Chat client={client} theme='str-chat__theme-light'>
+            <Chat client={client} theme='str-chat__theme-dark'>
                 <StreamChannelComponent channel={channel as Channel}>
                     <Window>
                         <VirtualizedMessageList />
