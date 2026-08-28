@@ -11,6 +11,11 @@ export const getEnv = (key: string): string => {
   return import.meta.env[key] as string;
 };
 
+// ВРЕМЕННО (только локальная разработка): отключает проверку JWT, чтобы окна
+// видео и чата рендерились без настоящих токенов. import.meta.env.DEV === false
+// в `npm run build`, поэтому в прод-бандл эти ветки не попадают.
+export const DEV_BYPASS_AUTH = import.meta.env.DEV;
+
 export const JITSI_DOMAIN = getEnv('VITE_JITSI_DOMAIN');
 export const WEBHOOK_URL = getEnv('VITE_WEBHOOK_URL');
 export const STREAM_CHAT_API_KEY = getEnv('VITE_STREAM_CHAT_API_KEY');

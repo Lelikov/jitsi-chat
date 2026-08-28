@@ -1,6 +1,6 @@
 import { JitsiMeeting } from '@jitsi/react-sdk';
 import React, { useRef, useCallback, useMemo } from 'react';
-import { WEBHOOK_URL, JITSI_DOMAIN } from '../utils/env';
+import { WEBHOOK_URL, JITSI_DOMAIN, DEV_BYPASS_AUTH } from '../utils/env';
 
 interface VideoRoomProps {
     jwt: string;
@@ -65,7 +65,7 @@ const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
         iframeRef.style.border = 'none';
     }, []);
 
-    if (!jwt || jwt.split('.').length !== 3) {
+    if (!DEV_BYPASS_AUTH && (!jwt || jwt.split('.').length !== 3)) {
         return (
             <div className="video-room-container" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'red' }}>
                 Неверный видео-токен
@@ -77,7 +77,7 @@ const VideoRoom: React.FC<VideoRoomProps> = React.memo(({ jwt, roomName }) => {
         <div className="video-room-container" style={{ width: '100%', height: '100%' }}>
             <JitsiMeeting
                 domain={JITSI_DOMAIN}
-                jwt={jwt}
+                jwt={jwt || undefined}
                 roomName={roomName}
                 spinner={renderSpinner}
                 configOverwrite={configOverwrite}

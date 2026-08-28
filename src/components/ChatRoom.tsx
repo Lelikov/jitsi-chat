@@ -9,7 +9,7 @@ import {
 import { StreamChat, Channel } from 'stream-chat';
 import 'stream-chat-react/dist/css/v2/index.css';
 import { jwtDecode } from 'jwt-decode';
-import { STREAM_CHAT_API_KEY, STREAM_CHAT_BASE_URL } from '../utils/env';
+import { STREAM_CHAT_API_KEY, STREAM_CHAT_BASE_URL, DEV_BYPASS_AUTH } from '../utils/env';
 
 interface UserData {
     id: string;
@@ -36,15 +36,19 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
         });
 
 
+        // В bypass-режиме настоящего Stream-токена нет — берём dev-токен,
+        // подписанный на клиенте (работает, если в приложении Stream включены dev tokens).
+        const token = jwt || (DEV_BYPASS_AUTH ? chatClient.devToken(userData.id) : jwt);
+
         const init = async () => {
             try {
                 if (!chatClient.userID) {
-                    await chatClient.connectUser(userData, jwt);
+                    await chatClient.connectUser(userData, token);
                 } else if (chatClient.userID !== userData.id) {
                     if (chatClient.userID) {
                         await chatClient.disconnectUser();
                     }
-                    await chatClient.connectUser(userData, jwt);
+                    await chatClient.connectUser(userData, token);
                 } else {
                     await chatClient.openConnection();
                 }
@@ -59,7 +63,8 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
                 setChannel(spaceChannel);
             } catch (error) {
                 console.error("Chat connection failed:", error);
-                if (mounted && onError) onError();
+                // В bypass-режиме не прячем панель чата — иначе окно не увидеть.
+                if (mounted && onError && !DEV_BYPASS_AUTH) onError();
             }
         };
 
@@ -100,11 +105,15 @@ interface MyJwtPayload {
 
 const ChatRoom: React.FC<ChatRoomProps> = ({ jwt, channelId, onError }) => {
   const userData = useMemo<UserData | null>(() => {
-      if (!jwt) return null;
-      
+      const devUser = DEV_BYPASS_AUTH
+          ? { id: 'dev-user', name: 'Dev User', image: 'https://getstream.io/random_png/?name=dev-user' }
+          : null;
+
+      if (!jwt) return devUser;
+
       try {
           const payload = jwtDecode<MyJwtPayload>(jwt);
-      
+
           if (payload.user_id) {
             return {
                 id: payload.user_id,
@@ -112,9 +121,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ jwt, channelId, onError }) => {
                 image: `https://getstream.io/random_png/?name=${payload.user_id}`,
             };
           }
-          return null;
+          return devUser;
       } catch {
-          return null;
+          return devUser;
       }
   }, [jwt]);
 

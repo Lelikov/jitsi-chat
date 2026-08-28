@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect, FC } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import VideoRoom from './components/VideoRoom';
 import ChatOverlay from './components/ChatOverlay';
+import { DEV_BYPASS_AUTH } from './utils/env';
 import './layout.css';
 
 interface MyJwtPayload {
@@ -45,7 +46,8 @@ const App: FC = () => {
     const { channelId, jwtVideo, jwtChat } = useMemo(() => {
         const path = window.location.pathname;
         const rawChannelId = path.split('/')[1];
-        const channelId = rawChannelId ? decodeURIComponent(rawChannelId) : null;
+        const parsedChannelId = rawChannelId ? decodeURIComponent(rawChannelId) : null;
+        const channelId = parsedChannelId ?? (DEV_BYPASS_AUTH ? 'dev-room' : null);
 
         const searchParams = new URLSearchParams(window.location.search);
         const jwtVideo = searchParams.get('jwt_video');
@@ -64,8 +66,8 @@ const App: FC = () => {
         setChatConnectionError(false);
     }
 
-    const isVideoValid = useMemo(() => validateToken(jwtVideo), [jwtVideo]);
-    const isChatValid = useMemo(() => validateToken(jwtChat, true), [jwtChat]);
+    const isVideoValid = useMemo(() => DEV_BYPASS_AUTH || validateToken(jwtVideo), [jwtVideo]);
+    const isChatValid = useMemo(() => DEV_BYPASS_AUTH || validateToken(jwtChat, true), [jwtChat]);
 
     const showInvalidChatToast = (jwtChat && !isChatValid && !dismissedToast) || (chatConnectionError && !dismissedToast);
 
@@ -78,7 +80,7 @@ const App: FC = () => {
         );
     }
 
-    if (!jwtVideo || !isVideoValid) {
+    if (!DEV_BYPASS_AUTH && (!jwtVideo || !isVideoValid)) {
         return (
             <div className="stub-container">
                 <h1>Нет доступа к встрече</h1>
@@ -91,10 +93,10 @@ const App: FC = () => {
     return (
         <div className="app-container">
             <div className="video-section">
-                <VideoRoom jwt={jwtVideo} roomName={channelId} />
+                <VideoRoom jwt={jwtVideo ?? ''} roomName={channelId} />
             </div>
-            {jwtChat && isChatValid && !chatConnectionError && (
-                <ChatOverlay jwt={jwtChat} channelId={channelId} onError={() => setChatConnectionError(true)} />
+            {(DEV_BYPASS_AUTH || (jwtChat && isChatValid)) && !chatConnectionError && (
+                <ChatOverlay jwt={jwtChat ?? ''} channelId={channelId} onError={() => setChatConnectionError(true)} />
             )}
             {showInvalidChatToast && <Toast message="Неверный токен чата - Чат отключен" onClose={() => setDismissedToast(true)} />}
         </div>
