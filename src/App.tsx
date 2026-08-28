@@ -5,10 +5,29 @@ import ChatOverlay from './components/ChatOverlay';
 import { DEV_BYPASS_AUTH } from './utils/env';
 import './layout.css';
 
+const ORGANIZER_ROLE = 'organizer';
+
 interface MyJwtPayload {
     user_id?: string;
+    context?: {
+        user?: {
+            role?: string;
+        };
+    };
     [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
+
+// Роль участника живёт только в jwt_video: event-booking кладёт её в
+// context.user.role ("organizer" | "client"). В jwt_chat (токен Stream) роли нет.
+const isOrganizerToken = (token: string | null): boolean => {
+    if (!token) return false;
+
+    try {
+        return jwtDecode<MyJwtPayload>(token).context?.user?.role === ORGANIZER_ROLE;
+    } catch {
+        return false;
+    }
+};
 
 const validateToken = (token: string | null, checkUserId: boolean = false): boolean => {
     if (!token) return false;
@@ -68,6 +87,11 @@ const App: FC = () => {
 
     const isVideoValid = useMemo(() => DEV_BYPASS_AUTH || validateToken(jwtVideo), [jwtVideo]);
     const isChatValid = useMemo(() => DEV_BYPASS_AUTH || validateToken(jwtChat, true), [jwtChat]);
+    // Без токена в dev-режиме роль взять неоткуда — показываем кнопку, чтобы её было видно локально.
+    const isOrganizer = useMemo(
+        () => isOrganizerToken(jwtVideo) || (DEV_BYPASS_AUTH && !jwtVideo),
+        [jwtVideo],
+    );
 
     const showInvalidChatToast = (jwtChat && !isChatValid && !dismissedToast) || (chatConnectionError && !dismissedToast);
 
@@ -96,7 +120,7 @@ const App: FC = () => {
                 <VideoRoom jwt={jwtVideo ?? ''} roomName={channelId} />
             </div>
             {(DEV_BYPASS_AUTH || (jwtChat && isChatValid)) && !chatConnectionError && (
-                <ChatOverlay jwt={jwtChat ?? ''} channelId={channelId} onError={() => setChatConnectionError(true)} />
+                <ChatOverlay jwt={jwtChat ?? ''} channelId={channelId} isOrganizer={isOrganizer} onError={() => setChatConnectionError(true)} />
             )}
             {showInvalidChatToast && <Toast message="Неверный токен чата - Чат отключен" onClose={() => setDismissedToast(true)} />}
         </div>

@@ -78,7 +78,7 @@ const ChatClientWrapper: React.FC<ChatClientWrapperProps> = ({ jwt, userData, ch
     if (!client) return <div className="chat-loading">Подключение к чату...</div>;
 
     return (
-        <div className="chat-room-container" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div className="chat-room-container">
             <Chat client={client} theme='str-chat__theme-dark'>
                 <StreamChannelComponent channel={channel as Channel}>
                     <Window>

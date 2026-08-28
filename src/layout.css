@@ -55,11 +55,19 @@ body, html, #root {
     background-color: #1a1a1a;
 }
 
+/* Оба — гибкие соседи кнопки «Телемост» в колонке .chat-section.
+   min-height: 0 нужен, иначе лента сообщений распирает флекс-контейнер. */
+.chat-room-container,
 .chat-loading {
+    flex: 1;
+    min-height: 0;
     display: flex;
+    flex-direction: column;
+}
+
+.chat-loading {
     align-items: center;
     justify-content: center;
-    height: 100%;
     color: #ccc;
 }
 
@@ -83,6 +91,45 @@ body, html, #root {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     z-index: 1000;
     animation: fadeIn 0.3s ease-out;
+}
+
+/* Аварийный переход в Яндекс.Телемост, если не работает Jitsi.
+   Шапка панели чата — показывается и прячется вместе с ней.
+   Видна только организатору (context.user.role в jwt_video). */
+.telemost-fallback {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin: 8px;
+}
+
+.telemost-hint {
+    font-size: 12px;
+    color: #aaa;
+    text-align: center;
+}
+
+.telemost-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background-color: #3a3226;
+    color: #ffcc66;
+    border: 1px solid #7a6432;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.telemost-btn:hover {
+    background-color: #4a4030;
 }
 
 .chat-toggle-btn {
