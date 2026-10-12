@@ -55,7 +55,7 @@ body, html, #root {
     background-color: #1a1a1a;
 }
 
-/* Оба — гибкие соседи кнопки «Телемост» в колонке .chat-section.
+/* Оба — гибкие соседи кнопки «Zoom» в колонке .chat-section.
    min-height: 0 нужен, иначе лента сообщений распирает флекс-контейнер. */
 .chat-room-container,
 .chat-loading {
@@ -93,10 +93,10 @@ body, html, #root {
     animation: fadeIn 0.3s ease-out;
 }
 
-/* Аварийный переход в Яндекс.Телемост, если не работает Jitsi.
+/* Аварийный переход в Zoom (zoommtg://), если не работает Jitsi.
    Шапка панели чата — показывается и прячется вместе с ней.
    Видна только организатору (context.user.role в jwt_video). */
-.telemost-fallback {
+.zoom-fallback {
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
@@ -105,21 +105,21 @@ body, html, #root {
     margin: 8px;
 }
 
-.telemost-hint {
+.zoom-hint {
     font-size: 12px;
     color: #aaa;
     text-align: center;
 }
 
-.telemost-btn {
+.zoom-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     padding: 10px 16px;
-    background-color: #3a3226;
-    color: #ffcc66;
-    border: 1px solid #7a6432;
+    background-color: #0b5cff;
+    color: #fff;
+    border: 1px solid #0b5cff;
     border-radius: 8px;
     font-size: 14px;
     font-family: inherit;
@@ -128,8 +128,12 @@ body, html, #root {
     transition: background-color 0.2s ease;
 }
 
-.telemost-btn:hover {
-    background-color: #4a4030;
+.zoom-btn:hover {
+    background-color: #0047d6;
+}
+
+.zoom-hint a {
+    color: #6c9bff;
 }
 
 .chat-toggle-btn {

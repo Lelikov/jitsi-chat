@@ -1,6 +1,6 @@
 import { useState, FC } from 'react';
 import ChatRoom from './ChatRoom';
-import TelemostButton from './TelemostButton';
+import ZoomButton from './ZoomButton';
 
 interface ChatOverlayProps {
     jwt: string;
@@ -22,7 +22,7 @@ const ChatOverlay: FC<ChatOverlayProps> = ({ jwt, channelId, isOrganizer, onErro
             </button>
 
             <div className="chat-section" style={{ display: isOpen ? 'flex' : 'none' }}>
-                {isOrganizer && <TelemostButton />}
+                {isOrganizer && <ZoomButton />}
                 <ChatRoom jwt={jwt} channelId={channelId} onError={onError} />
             </div>
         </>
